@@ -32,21 +32,31 @@ title.TextColor3 = Color3.new(1,1,1)
 title.TextScaled = true
 title.Font = Enum.Font.GothamBold
 
+-- COPY LINK BUTTON
 local copyBtn = Instance.new("TextButton", frame)
-copyBtn.Size = UDim2.fromScale(0.9, 0.22)
+copyBtn.Size = UDim2.fromScale(0.9, 0.2)
 copyBtn.Position = UDim2.fromScale(0.05, 0.28)
 copyBtn.Text = "Copy Link"
 copyBtn.TextScaled = true
 copyBtn.Font = Enum.Font.Gotham
 
+-- STATUS LABEL
 local status = Instance.new("TextLabel", frame)
 status.Size = UDim2.fromScale(0.9, 0.18)
-status.Position = UDim2.fromScale(0.05, 0.58)
+status.Position = UDim2.fromScale(0.05, 0.52)
 status.BackgroundTransparency = 1
 status.TextScaled = true
 status.Font = Enum.Font.GothamBold
 
--- COPY LINK
+-- VERIFY BUTTON
+local verify = Instance.new("TextButton", frame)
+verify.Size = UDim2.fromScale(0.9, 0.18)
+verify.Position = UDim2.fromScale(0.05, 0.74)
+verify.Text = "Verify"
+verify.TextScaled = true
+verify.Font = Enum.Font.GothamBold
+
+-- COPY LINK FUNCTION
 copyBtn.MouseButton1Click:Connect(function()
     if setclipboard then
         setclipboard(GROUP_LINK)
@@ -56,20 +66,29 @@ copyBtn.MouseButton1Click:Connect(function()
     end
 end)
 
--- STATUS CHECK + AUTO LOAD
+-- AUTO STATUS CHECK
 task.spawn(function()
     while gui.Parent do
         if player:IsInGroup(GROUP_ID) then
             status.Text = "STATUS: JOINED ✅"
             status.TextColor3 = Color3.fromRGB(0,255,0)
-            task.wait(0.8)
-            gui:Destroy()
-            loadstring(game:HttpGet(MAIN_SCRIPT))()
-            break
         else
             status.Text = "STATUS: NOT JOINED ❌"
             status.TextColor3 = Color3.fromRGB(255,80,80)
         end
         task.wait(1.5)
     end
+end)
+
+-- VERIFY BUTTON
+verify.MouseButton1Click:Connect(function()
+    if not player:IsInGroup(GROUP_ID) then
+        verify.Text = "Join Group First"
+        task.wait(1.2)
+        verify.Text = "Verify"
+        return
+    end
+
+    gui:Destroy()
+    loadstring(game:HttpGet(MAIN_SCRIPT))()
 end)
